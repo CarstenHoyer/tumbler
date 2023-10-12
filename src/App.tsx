@@ -48,8 +48,8 @@ const COUNT = 10;
 const fontSize = 1;
 const fontDepth = 0.5;
 const fontDist = 1.5;
-const rowDepth = 0.25;
-const attractorStrength = 120;
+const rowDepth = 0.15;
+const attractorStrength = 200;
 const rigidBodyShape: ColliderShape = undefined;
 
 const createInstances = (char: string, offset: number, count: number) => {
@@ -64,7 +64,7 @@ const createInstances = (char: string, offset: number, count: number) => {
       angularVelocity: [0, 0, 0],
       angularDamping: 10.0,
       linearDamping: 10.0,
-      density: 100.0,
+      density: Math.random() * 60.0 + 60,
       // friction: 10,
     });
   }
@@ -116,11 +116,11 @@ const Scene = () => {
   const loader = new FontLoader();
 
   const instancesA1 = useMemo(
-    () => createInstances("a1", 0 * fontDist, Math.floor(COUNT * 0.5)),
+    () => createInstances("a1", 1 * fontDist, COUNT), //Math.floor(COUNT * 0.5)),
     []
   );
   const instancesK = useMemo(
-    () => createInstances("k", 2 * fontDist, COUNT),
+    () => createInstances("k", 1 * fontDist, COUNT),
     []
   );
   const instancesQ = useMemo(
@@ -128,7 +128,7 @@ const Scene = () => {
     []
   );
   const instancesA2 = useMemo(
-    () => createInstances("a2", 3 * fontDist, Math.floor(COUNT * 0.5)),
+    () => createInstances("a2", 1 * fontDist, COUNT), //Math.floor(COUNT * 0.5)),
     []
   );
 
@@ -155,7 +155,7 @@ const Scene = () => {
   useFrame(({ clock }) => {
     // if (clock.elapsedTime - lastActionTime.current > 0.1) {
     lastActionTime.current = clock.elapsedTime;
-    let t = simplex.noise(clock.elapsedTime / 50, clock.elapsedTime / 10) / 500;
+    let t = simplex.noise(clock.elapsedTime / 20, clock.elapsedTime / 20) / 300;
 
     let newCurveOffset = lastCurveOffsetRef.current + t;
     if (newCurveOffset < 0) newCurveOffset = 1 + newCurveOffset;
@@ -164,10 +164,10 @@ const Scene = () => {
     lastCurveOffsetRef.current = newCurveOffset;
     let point = curve.getPoint(newCurveOffset);
 
-    attractorGroupRef.current?.children[0].position.set(
+    attractorGroupRef.current?.children?.[0]?.position.set(
       point.x,
       point.y,
-      attractorGroupRef.current?.children[0].position.z
+      attractorGroupRef.current?.children?.[0]?.position.z
     );
     // }
   });
@@ -186,8 +186,10 @@ const Scene = () => {
           <InstancedRigidBodies ref={rigidBodiesA1} instances={instancesA1}>
             <instancedMesh
               receiveShadow={true}
-              args={[a, undefined, Math.floor(COUNT * 0.5)]}
-              count={Math.floor(COUNT * 0.5)}
+              // args={[a, undefined, Math.floor(COUNT * 0.5)]}
+              args={[a, undefined, COUNT]}
+              // count={Math.floor(COUNT * 0.5)}
+              count={COUNT}
             >
               <MeshTransmissionMaterial
                 backside
@@ -195,10 +197,10 @@ const Scene = () => {
                 thickness={3}
                 chromaticAberration={0.025}
                 anisotropy={0.1}
-                distortion={0.9}
+                distortion={0.1}
                 distortionScale={0.1}
                 temporalDistortion={0.2}
-                iridescence={0}
+                iridescence={1}
                 iridescenceIOR={1}
                 iridescenceThicknessRange={[0, 1400]}
               />
@@ -232,7 +234,7 @@ const Scene = () => {
           <InstancedRigidBodies ref={rigidBodiesQ} instances={instancesQ}>
             <instancedMesh
               receiveShadow={true}
-              args={[q, material, COUNT]}
+              args={[q, undefined, COUNT]}
               count={COUNT}
             >
               <MeshTransmissionMaterial
@@ -255,8 +257,10 @@ const Scene = () => {
           <InstancedRigidBodies ref={rigidBodiesA2} instances={instancesA2}>
             <instancedMesh
               receiveShadow={true}
-              args={[a, material, Math.floor(COUNT * 0.5)]}
-              count={Math.floor(COUNT * 0.5)}
+              // args={[a, material, Math.floor(COUNT * 0.5)]}
+              args={[a, undefined, COUNT]}
+              // count={Math.floor(COUNT * 0.5)}
+              count={COUNT}
             >
               <MeshTransmissionMaterial
                 backside
